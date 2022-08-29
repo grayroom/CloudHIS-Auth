@@ -25,8 +25,8 @@ class UserManager(UserManager):
         user.save(using=self._db)
         return user
 class User(AbstractBaseUser):
-    id = models.BigAutoField(help_text="User ID", primary_key=True)
-    username = models.CharField(max_length=50)
+    id = models.BigAutoField(help_text="User ID", primary_key=True) # 로그인 아이디가 아니라 PK
+    username = models.CharField(max_length=50) # 얘가 진짜 로그인할때 쓰는 아이디
     email = models.CharField(max_length=50)
     password = models.CharField(max_length=50)
 

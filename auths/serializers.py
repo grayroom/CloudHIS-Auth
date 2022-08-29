@@ -3,6 +3,9 @@ from auths.models import User
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 class UserJWTSignupSerializer(serializers.ModelSerializer):
     id = serializers.CharField(
@@ -57,7 +60,7 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Email is required')
 
         if username is None:
-            raise serializers.ValidationError('Username is required')
+            raise serializers.ValidationError('username is required')
 
         if password is None:
             raise serializers.ValidationError('Password is required')
@@ -66,7 +69,7 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
 
 
 class UserJWTLoginSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(
+    username = serializers.CharField(
         required=True,
         write_only=True
     )
@@ -79,20 +82,20 @@ class UserJWTLoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'password')
+        fields = ('username', 'password')
 
     def validate(self, data):
-        id = data.get('id', None)
+        username = data.get('username', None)
         password = data.get('password', None)
 
-        if User.objects.filter(id=id).exists():
-            user = User.objects.get(id=id)
+        if User.objects.filter(username=username).exists():
+            user = User.objects.get(username=username)
             if not user.check_password(password):
                 raise serializers.ValidationError('Incorrect password')
         else:
             raise serializers.ValidationError('User does not exist')
 
-        token = RefreshToken.for_user(user)
+        token = CustomTokenObtainPairSerializer.get_token(user)
         refresh = str(token)
         access = str(token.access_token)
 
@@ -103,3 +106,22 @@ class UserJWTLoginSerializer(serializers.ModelSerializer):
         }
 
         return data
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        # FIXME: ValueError: Cannot assign "<User: jeonghoon>": "OutstandingToken.user" must be a "User" instance.
+        # blacklist 앱 추가할 경우 위와같은 에러 발생
+        tar = User.objects.get(id=user.id)
+        token = super().get_token(tar)
+
+        # Add custom claims
+        token['username'] = user.username
+        # NOTE: cliam에 권한수준에 대한 정보가 들어가야 할 것  같음
+
+        return token
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
