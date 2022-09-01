@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from django.views.generic import TemplateView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from auths.serializers import UserJWTSignupSerializer, UserJWTLoginSerializer, CustomTokenObtainPairSerializer
@@ -9,6 +10,8 @@ from rest_framework import status
 
 
 # Create your views here.
+class HomeView(TemplateView):
+    template_name = 'index.html'
 
 
 class JWTSignupView(APIView):
@@ -30,7 +33,7 @@ class JWTSignupView(APIView):
             access = str(token.access_token)
 
             return JsonResponse({
-                'user': user.username,
+                'user': user.alias,
                 'access': access,
                 'refresh': refresh
             })
@@ -53,7 +56,7 @@ class JWTLoginView(APIView):
             refresh = serializer.validated_data['refresh']
 
             return JsonResponse({
-                'user': user.username,
+                'user': user.alias,
                 'access': access,
                 'refresh': refresh
             }, status=status.HTTP_200_OK)

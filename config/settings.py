@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import environ
 
 from datetime import timedelta
@@ -36,8 +37,13 @@ INSTALLED_APPS = [
 
     # NOTE: app이름은 관례상 복수형으로 지정한다고함
     'auths',
+    # 'phonenumber_field',
     'rest_framework_simplejwt',
     # 'rest_framework_simplejwt.token_blacklist',
+]
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
 ]
 
 REST_FRAMEWORK = {
@@ -75,7 +81,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'dist')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,8 +102,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env('MARIA_AUTH_NAME'),
+        'USER': env('MARIA_AUTH_USER'),
+        'PASSWORD': env('MARIA_AUTH_PW'),  # mariaDB 설치 시 입력한 root 비밀번호 입력
+        'HOST': 'localhost',
+        'PORT': env('MARIA_PORT'),
     }
 }
 
@@ -126,7 +136,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
@@ -137,8 +147,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'dist/static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
