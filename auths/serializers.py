@@ -26,13 +26,14 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'alias', 'password')
+        fields = ('id', 'alias', 'password', 'name')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         user = User(
             alias=validated_data['alias'],
             password=validated_data['password'],
+            name=validated_data['name']
         )
 
         return user
@@ -41,6 +42,7 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             alias=self.validated_data['alias'],
             password=self.validated_data['password'],
+            name=self.validated_data['name']
         )
 
         return user
@@ -48,12 +50,16 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
     def validate(self, data):
         alias = data.get('alias', None)
         password = data.get('password', None)
+        name = data.get('name', None)
 
         if alias is None:
             raise serializers.ValidationError('alias is required')
 
         if password is None:
             raise serializers.ValidationError('Password is required')
+
+        if name is None:
+            raise serializers.ValidationError('Name is required')
 
         return data
 
@@ -75,7 +81,7 @@ class UserInformationSerializer(serializers.ModelSerializer):
         return user_information
 
     def save(self, request):
-        userInfo = UserInformation.create_user_information(
+        userinfo = UserInformation.create_user_information(
             user_id=self.validated_data['user_id'],
             name=self.validated_data['name'],
             email=self.validated_data['email'],
@@ -83,7 +89,7 @@ class UserInformationSerializer(serializers.ModelSerializer):
             subject=self.validated_data['subject'],
         )
 
-        return userInfo
+        return userinfo
 
     def validate(self, data):
         user_id = data.get('user_id', None)
@@ -153,8 +159,6 @@ class UserJWTLoginSerializer(serializers.ModelSerializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
-        # FIXME: ValueError: Cannot assign "<User: jeonghoon>": "OutstandingToken.user" must be a "User" instance.
-        # blacklist 앱 추가할 경우 위와같은 에러 발생
         tar = User.objects.get(id=user.id)
         token = super().get_token(tar)
 

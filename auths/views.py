@@ -2,7 +2,8 @@ from rest_framework.views import APIView
 from django.views.generic import TemplateView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from auths.serializers import UserJWTSignupSerializer, UserJWTLoginSerializer, CustomTokenObtainPairSerializer, UserInformationSerializer
+from auths.serializers import UserJWTSignupSerializer, UserJWTLoginSerializer, CustomTokenObtainPairSerializer, \
+    UserInformationSerializer
 
 from django.http import JsonResponse
 from rest_framework.response import Response
@@ -31,7 +32,7 @@ class JWTSignupView(APIView):
             pseudo_request.data['user_id'] = user.id
             userinfo_serializer = self.userinfo_serializer_class(
                 data=pseudo_request.data)
-            if (userinfo_serializer.is_valid(raise_exception=False)):
+            if userinfo_serializer.is_valid(raise_exception=False):
                 userinfo = userinfo_serializer.save(pseudo_request)
             else:
                 return Response(userinfo_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

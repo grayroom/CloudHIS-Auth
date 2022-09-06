@@ -37,9 +37,8 @@ INSTALLED_APPS = [
 
     # NOTE: app이름은 관례상 복수형으로 지정한다고함
     'auths',
-    # 'phonenumber_field',
     'rest_framework_simplejwt',
-    # 'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 PASSWORD_HASHERS = [
@@ -49,7 +48,11 @@ PASSWORD_HASHERS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    # FIXME: POST요청 전부 막는건 좀 아닌거같음... 로그인이 안되잖아
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    # )
 }
 
 REST_USE_JWT = True
@@ -57,9 +60,13 @@ REST_USE_JWT = True
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': False,
-    'TOKEN_USER_CLAIMS': 'user.User',  # user model을 연결
-    # 'BLACKLIST_AFTER_ROTATION': True,
+
+
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 
     'ALGORITHM': 'RS256',
     'SIGNING_KEY': env("JWT_PRIVATE_KEY").replace('/\\n/g', '\n'),
