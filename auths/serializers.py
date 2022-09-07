@@ -76,6 +76,7 @@ class UserInformationSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             address=validated_data['address'],
             subject=validated_data['subject'],
+            phone_number=validated_data['phonenumber']
         )
 
         return user_information
@@ -87,6 +88,7 @@ class UserInformationSerializer(serializers.ModelSerializer):
             email=self.validated_data['email'],
             address=self.validated_data['address'],
             subject=self.validated_data['subject'],
+            phone_number=self.validated_data['phone_number']
         )
 
         return userinfo
@@ -97,6 +99,7 @@ class UserInformationSerializer(serializers.ModelSerializer):
         email = data.get('email', None)
         address = data.get('address', None)
         subject = data.get('subject', None)
+        phone_number = data.get('phone_number', None)
 
         if user_id is None:
             raise serializers.ValidationError('user_id is required')
@@ -112,6 +115,9 @@ class UserInformationSerializer(serializers.ModelSerializer):
 
         if subject is None:
             raise serializers.ValidationError('subject is required')
+
+        if phone_number is None:
+            raise serializers.ValidationError('phone_number is required')
 
         return data
 
