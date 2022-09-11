@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from auths.models import User, UserInformation
-
-from rest_framework_simplejwt.tokens import RefreshToken
+from auths.models import User
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -13,7 +11,7 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
         write_only=True,
     )
 
-    alias = serializers.CharField(
+    username = serializers.CharField(
         required=True,
         write_only=True,
     )
@@ -24,106 +22,90 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
         style={'input_type': 'password'}
     )
 
+    name = serializers.CharField(
+        required=True,
+        write_only=True,
+    )
+
+    email = serializers.EmailField(
+        required=True,
+        write_only=True,
+    )
+
+    subject = serializers.CharField(
+        required=True,
+        write_only=True,
+    )
+
+    phone_number = serializers.CharField(
+        required=True,
+        write_only=True
+    )
+
+
     class Meta:
         model = User
-        fields = ('id', 'alias', 'password', 'name')
+        fields = '__all__'
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         user = User(
-            alias=validated_data['alias'],
+            username=validated_data['username'],
             password=validated_data['password'],
-            name=validated_data['name']
+            name=validated_data['name'],
+            email=validated_data['email'],
+            subject=validated_data['subject'],
+            phone_number=validated_data['phone_number'],
         )
 
         return user
 
     def save(self, request):
         user = User.objects.create_user(
-            alias=self.validated_data['alias'],
+            username=self.validated_data['username'],
             password=self.validated_data['password'],
-            name=self.validated_data['name']
+            name=self.validated_data['name'],
+            email=self.validated_data['email'],
+            subject=self.validated_data['subject'],
+            phone_number=self.validated_data['phone_number'],
+            address=self.validated_data['address'],
         )
 
         return user
 
     def validate(self, data):
-        alias = data.get('alias', None)
+        username = data.get('username', None)
         password = data.get('password', None)
         name = data.get('name', None)
-
-        if alias is None:
-            raise serializers.ValidationError('alias is required')
-
-        if password is None:
-            raise serializers.ValidationError('Password is required')
-
-        if name is None:
-            raise serializers.ValidationError('Name is required')
-
-        return data
-
-
-class UserInformationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserInformation
-        fields = '__all__'
-
-    def create(self, validated_data):
-        user_information = UserInformation(
-            user_id=validated_data['user_id'],
-            name=validated_data['name'],
-            email=validated_data['email'],
-            address=validated_data['address'],
-            subject=validated_data['subject'],
-            phone_number=validated_data['phonenumber']
-        )
-
-        return user_information
-
-    def save(self, request):
-        userinfo = UserInformation.create_user_information(
-            user_id=self.validated_data['user_id'],
-            name=self.validated_data['name'],
-            email=self.validated_data['email'],
-            address=self.validated_data['address'],
-            subject=self.validated_data['subject'],
-            phone_number=self.validated_data['phone_number']
-        )
-
-        return userinfo
-
-    def validate(self, data):
-        user_id = data.get('user_id', None)
-        name = data.get('name', None)
         email = data.get('email', None)
-        address = data.get('address', None)
         subject = data.get('subject', None)
         phone_number = data.get('phone_number', None)
 
-        if user_id is None:
-            raise serializers.ValidationError('user_id is required')
+        if username is None:
+            raise serializers.ValidationError('아이디를 입력해주세요')
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError('이미 사용중인 아이디입니다')
+
+        if password is None:
+            raise serializers.ValidationError('비밀번호를 입력해주세요')
 
         if name is None:
-            raise serializers.ValidationError('name is required')
+            raise serializers.ValidationError('이름을 입력해주세요')
 
         if email is None:
-            raise serializers.ValidationError('email is required')
-
-        if address is None:
-            raise serializers.ValidationError('address is required')
+            raise serializers.ValidationError('이메일을 입력해주세요')
 
         if subject is None:
-            raise serializers.ValidationError('subject is required')
+            raise serializers.ValidationError('진료과목을 입력해주세요')
 
         if phone_number is None:
-            raise serializers.ValidationError('phone_number is required')
+            raise serializers.ValidationError('전화번호를 입력해주세요')
 
         return data
 
 
 class UserJWTLoginSerializer(serializers.ModelSerializer):
-    alias = serializers.CharField(
+    username = serializers.CharField(
         required=True,
         write_only=True
     )
@@ -136,14 +118,14 @@ class UserJWTLoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('alias', 'password')
+        fields = ('username', 'password')
 
     def validate(self, data):
-        alias = data.get('alias', None)
+        username = data.get('username', None)
         password = data.get('password', None)
 
-        if User.objects.filter(alias=alias).exists():
-            user = User.objects.get(alias=alias)
+        if User.objects.filter(username=username).exists():
+            user = User.objects.get(username=username)
             if not user.check_password(password):
                 raise serializers.ValidationError('Incorrect password')
         else:
@@ -169,7 +151,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(tar)
 
         # Add custom claims
-        token['alias'] = user.alias
+        token['username'] = user.username
+        token['authority'] = user.authority
         # NOTE: cliam에 권한수준에 대한 정보가 들어가야 할 것  같음
 
         return token

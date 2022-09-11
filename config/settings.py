@@ -49,10 +49,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    # FIXME: POST요청 전부 막는건 좀 아닌거같음... 로그인이 안되잖아
-    # 'DEFAULT_PERMISSION_CLASSES': (
-    #     'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    # )
+
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'auths.permissions.',
+    )
 }
 
 REST_USE_JWT = True
@@ -61,12 +61,14 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
 
     'ALGORITHM': 'RS256',
     'SIGNING_KEY': env("JWT_PRIVATE_KEY").replace('/\\n/g', '\n'),

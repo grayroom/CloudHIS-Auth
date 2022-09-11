@@ -1,13 +1,20 @@
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from django.views.generic import TemplateView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from auths.serializers import UserJWTSignupSerializer, UserJWTLoginSerializer, CustomTokenObtainPairSerializer, \
-    UserInformationSerializer
+from auths.serializers import UserJWTSignupSerializer, UserJWTLoginSerializer, CustomTokenObtainPairSerializer
 
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework import status
+
+from auths.models import User
+from config import settings
+
+from auths.permissions import IsAuthorizedUser
+
+import jwt
 
 
 # Create your views here.
@@ -17,32 +24,19 @@ class HomeView(TemplateView):
 
 class JWTSignupView(APIView):
     user_serializer_class = UserJWTSignupSerializer
-    userinfo_serializer_class = UserInformationSerializer
 
     def post(self, request):
         user_serializer = self.user_serializer_class(data=request.data)
 
         if user_serializer.is_valid(raise_exception=False):
-            # 여기서 유저정보를 serializer를 통해 DB에 저장
             user = user_serializer.save(request)
-
-            # FIXME: 이름좀 바꾸자
-            # NOTE: request뜯어서 userinfo entity를 추가하기 위한 과정
-            pseudo_request = request
-            pseudo_request.data['user_id'] = user.id
-            userinfo_serializer = self.userinfo_serializer_class(
-                data=pseudo_request.data)
-            if userinfo_serializer.is_valid(raise_exception=False):
-                userinfo = userinfo_serializer.save(pseudo_request)
-            else:
-                return Response(userinfo_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
             token = CustomTokenObtainPairSerializer.get_token(user)
             refresh = str(token)
             access = str(token.access_token)
 
             return JsonResponse({
-                'user': user.alias,
+                'user': user.username,
                 'access': access,
                 'refresh': refresh
             })
@@ -63,9 +57,34 @@ class JWTLoginView(APIView):
             refresh = serializer.validated_data['refresh']
 
             return JsonResponse({
-                'user': user.alias,
+                'user': user.username,
                 'access': access,
                 'refresh': refresh
             }, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserInformationView(APIView):
+    userModel = User.objects
+    permission_classes([IsAuthorizedUser])
+
+    def post(self, request):
+        access = request.headers.get("Authorization", None)
+        username = jwt.decode(access, settings.SIMPLE_JWT['VERIFYING_KEY'],
+                              algorithms=[settings.SIMPLE_JWT['ALGORITHM']])['username']
+        user = self.userModel.get(username=username)
+        return JsonResponse({
+            'user': user.username,
+            'email': user.email
+        }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthorizedUser])
+def logout_view(request):
+    refresh = request.COOKIES.get('refresh')
+    token = RefreshToken(refresh)
+    token.blacklist()
+    return Response(status=status.HTTP_205_RESET_CONTENT)
+

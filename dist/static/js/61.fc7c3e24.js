@@ -1,2 +1,0 @@
-"use strict";(self["webpackChunkcloud_his_auth_front"]=self["webpackChunkcloud_his_auth_front"]||[]).push([[61],{2061:function(t,n,s){s.r(n),s.d(n,{default:function(){return i}});var u=function(){var t=this;t._self._c;return t._m(0)},e=[function(){var t=this,n=t._self._c;return n("div",{staticClass:"md:h-screen"},[n("p",{staticClass:"dark:text-white"},[t._v("cloud his 개발페이지 메인화면입니다.")])])}],a={name:"MainPage"},l=a,r=s(1001),c=(0,r.Z)(l,u,e,!1,null,null,null),i=c.exports}}]);
-//# sourceMappingURL=61.fc7c3e24.js.map
