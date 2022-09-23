@@ -1,9 +1,11 @@
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from django.views.generic import TemplateView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from auths.serializers import UserJWTSignupSerializer, UserJWTLoginSerializer, CustomTokenObtainPairSerializer
+from auths.serializers import UserJWTSignupSerializer, UserJWTLoginSerializer, \
+    CustomTokenObtainPairSerializer
 
 from django.http import JsonResponse
 from rest_framework.response import Response
@@ -41,7 +43,8 @@ class JWTSignupView(APIView):
                 'refresh': refresh
             })
         else:
-            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(user_serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class JWTLoginView(APIView):
@@ -62,29 +65,54 @@ class JWTLoginView(APIView):
                 'refresh': refresh
             }, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserInformationView(APIView):
     userModel = User.objects
     permission_classes([IsAuthorizedUser])
 
-    def post(self, request):
-        access = request.headers.get("Authorization", None)
-        username = jwt.decode(access, settings.SIMPLE_JWT['VERIFYING_KEY'],
-                              algorithms=[settings.SIMPLE_JWT['ALGORITHM']])['username']
-        user = self.userModel.get(username=username)
+    def get(self, request):
+        payload = getPayload(request)
+        user = self.userModel.get(username=payload['username'])
+
         return JsonResponse({
             'user': user.username,
-            'email': user.email
+            'name': user.name,
+            'email': user.email,
+            'phone_num': user.phone_number.as_national,
+            'subject': user.subject,
+            'address': user.address.split("$")[0],
+            'address2': user.address.split("$")[1]
         }, status=status.HTTP_200_OK)
 
+    def post(self, request):
+        payload = getPayload(request)
+        user = self.userModel.get(username=payload['username'])
 
-@api_view(['POST'])
-@permission_classes([IsAuthorizedUser])
-def logout_view(request):
-    refresh = request.COOKIES.get('refresh')
-    token = RefreshToken(refresh)
-    token.blacklist()
-    return Response(status=status.HTTP_205_RESET_CONTENT)
+        user = self.userModel.get(username=payload['username'])
+        user.email = request.data['email']
+        user.phone_number = request.data['phone_num']
+        user.address = request.data['address']
+        user.save()
 
+        return Response(status=status.HTTP_200_OK)
+
+
+class UserLogoutView(APIView):
+    permission_classes([IsAuthorizedUser])
+
+    def post(self, request):
+        refresh = request.COOKIES.get('refresh')
+        token = RefreshToken(refresh)
+        token.blacklist()
+        return Response(status=status.HTTP_205_RESET_CONTENT)
+
+
+def getPayload(req):
+    token = req.headers.get("Authorization", None)
+    access_token = token.split(" ")[1]
+    return jwt.decode(access_token,
+                      settings.SIMPLE_JWT['VERIFYING_KEY'],
+                      algorithms=[settings.SIMPLE_JWT['ALGORITHM']])

@@ -4,17 +4,22 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.views.generic.base import RedirectView
 
 urlpatterns = [
+    # NOTE: re_path를 통해 routing을 vue-router에게 인가
     re_path(r'^auth/home/', views.HomeView.as_view(), name='home'),
     path('auth/', RedirectView.as_view(url='/auth/home/')),
     path('', RedirectView.as_view(url='auth/home/')),
 
-    path('auth/api/login/', views.JWTLoginView.as_view(), name='login'),
-    path('auth/api/signup/', views.JWTSignupView.as_view(), name='signup'),
-    path('auth/api/info/', views.UserInformationView.as_view(), name='userinfo'),
-    path('auth/api/logout/', views.logout_view, name='logout'),
+    # NOTE: user 관련
+    path('auth/api/user/login/', views.JWTLoginView.as_view(), name='login'),
+    path('auth/api/user/signup/', views.JWTSignupView.as_view(), name='signup'),
+    path('auth/api/user/info/', views.UserInformationView.as_view(), name='userinfo'),
+    path('auth/api/user/logout/', views.UserLogoutView.as_view(), name='logout'),
 
-    # NOTE: simple JWT 에서 제공하는 뷰
-    path('auth/api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('auth/api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('auth/api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    # NOTE: token 생명주기 관련
+    path('auth/api/token/', TokenObtainPairView.as_view(),
+         name='token_obtain_pair'),
+    path('auth/api/token/refresh/', TokenRefreshView.as_view(),
+         name='token_refresh'),
+    path('auth/api/token/verify/', TokenVerifyView.as_view(),
+         name='token_verify'),
 ]

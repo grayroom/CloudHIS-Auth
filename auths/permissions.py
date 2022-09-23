@@ -1,4 +1,5 @@
 import jwt
+import re
 from rest_framework import permissions
 from config import settings
 from rest_framework_simplejwt.exceptions import TokenError
@@ -13,19 +14,32 @@ class IsAuthorizedUser(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             handle_jwt_access_token(request)
         else:
-            access_token = request.headers.get("Authorization", None)
-            payload = jwt.decode(access_token, settings.SIMPLE_JWT['VERIFYING_KEY'],
-                                 algorithms=[settings.SIMPLE_JWT['ALGORITHM']])
-            return obj.author == payload.username
+            token = request.headers.get("Authorization", None)
+            try:
+                if request.match("^Bearer .*", token):
+                    access_token = token.split(" ")[1]
+                    payload = jwt.decode(access_token,
+                                         settings.SIMPLE_JWT['VERIFYING_KEY'],
+                                         algorithms=[settings.SIMPLE_JWT['ALGORITHM']])
+                    return obj.author == payload.username
+                else:
+                    raise Exception("invalid token format error")
+            except (jwt.InvalidTokenError, jwt.DecodeError, Exception) as exc:
+                raise TokenError(str(exc))
 
 
 def handle_jwt_access_token(request):
-    access_token = request.headers.get("Authorization", None)
+    token = request.headers.get("Authorization", None)
     try:
-        payload = jwt.decode(access_token, settings.SIMPLE_JWT['VERIFYING_KEY'],
-                             algorithms=[settings.SIMPLE_JWT['ALGORITHM']])
-        role = payload['role']
-    except (jwt.InvalidTokenError, jwt.DecodeError) as exc:
+        if request.match("^Bearer .*", token):
+            access_token = token.split(" ")[1]
+            payload = jwt.decode(access_token,
+                                 settings.SIMPLE_JWT['VERIFYING_KEY'],
+                                 algorithms=[settings.SIMPLE_JWT['ALGORITHM']])
+            role = payload['role']
+        else:
+            raise Exception("invalid token format error")
+    except (jwt.InvalidTokenError, jwt.DecodeError, Exception) as exc:
         raise TokenError(str(exc))
 
     if role > Authority.NO_AUTHORITY:
