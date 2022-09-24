@@ -91,7 +91,6 @@ class UserInformationView(APIView):
         payload = getPayload(request)
         user = self.userModel.get(username=payload['username'])
 
-        user = self.userModel.get(username=payload['username'])
         user.email = request.data['email']
         user.phone_number = request.data['phone_num']
         user.address = request.data['address']

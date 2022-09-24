@@ -103,6 +103,14 @@ TEMPLATES = [
     },
 ]
 
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': DEBUG,
+        'BUNDLE_DIR_NAME': 'dist/',  # must end with slash
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+    }
+}
+
 WSGI_APPLICATION = 'config.wsgi.application'
 
 

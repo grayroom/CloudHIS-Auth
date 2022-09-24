@@ -1,5 +1,4 @@
 import jwt
-import re
 from rest_framework import permissions
 from config import settings
 from rest_framework_simplejwt.exceptions import TokenError
@@ -36,7 +35,7 @@ def handle_jwt_access_token(request):
             payload = jwt.decode(access_token,
                                  settings.SIMPLE_JWT['VERIFYING_KEY'],
                                  algorithms=[settings.SIMPLE_JWT['ALGORITHM']])
-            role = payload['role']
+            role = payload['authority']
         else:
             raise Exception("invalid token format error")
     except (jwt.InvalidTokenError, jwt.DecodeError, Exception) as exc:

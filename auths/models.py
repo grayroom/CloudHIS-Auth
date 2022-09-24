@@ -29,7 +29,7 @@ class UserManager(BaseUserManager):
 class User(_User):
     # 기본정보
     name = models.CharField(max_length=50)
-    address = models.CharField(max_length=50)
+    address = models.CharField(max_length=100)
     join_date = models.DateTimeField(auto_now_add=True)
     phone_number = PhoneNumberField()
     # 소속을 나타내는 칼럼들
@@ -56,8 +56,3 @@ class User(_User):
         user.save()
         return user
 
-##############################################################################################
-# NOTE: model manager -> http://blog.hwahae.co.kr/all/tech/tech-tech/4108/
-# NOTE: custom user model -> https://dev-yakuza.posstree.com/ko/django/custom-user-model/
-# NOTE: djgno.contrib.auth -> https://docs.djangoproject.com/en/4.1/ref/contrib/auth/
-##############################################################################################
