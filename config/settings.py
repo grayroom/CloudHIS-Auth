@@ -28,7 +28,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -47,7 +47,7 @@ PASSWORD_HASHERS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 
     'DEFAULT_PERMISSION_CLASSES': (
@@ -68,7 +68,6 @@ SIMPLE_JWT = {
 
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
-
 
     'ALGORITHM': 'RS256',
     'SIGNING_KEY': env("JWT_PRIVATE_KEY").replace('/\\n/g', '\n'),
@@ -119,12 +118,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('MARIA_AUTH_NAME'),
-        'USER': env('MARIA_AUTH_USER'),
-        'PASSWORD': env('MARIA_AUTH_PW'),  # mariaDB 설치 시 입력한 root 비밀번호 입력
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env('PSQL_NAME'),
+        'USER': env('PSQL_ID'),
+        'PASSWORD': env('PSQL_PW'),
         'HOST': 'localhost',
-        'PORT': env('MARIA_PORT'),
+        'PORT': env('PSQL_PORT'),
     }
 }
 

@@ -9,6 +9,7 @@ class IsAuthorizedUser(permissions.BasePermission):
     def has_permission(self, request, view):
         handle_jwt_access_token(request)
 
+    # FIXME: 실제 사용하는 곳이 있는지 확인해봐야할듯
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             handle_jwt_access_token(request)
@@ -19,7 +20,8 @@ class IsAuthorizedUser(permissions.BasePermission):
                     access_token = token.split(" ")[1]
                     payload = jwt.decode(access_token,
                                          settings.SIMPLE_JWT['VERIFYING_KEY'],
-                                         algorithms=[settings.SIMPLE_JWT['ALGORITHM']])
+                                         algorithms=[
+                                             settings.SIMPLE_JWT['ALGORITHM']])
                     return obj.author == payload.username
                 else:
                     raise Exception("invalid token format error")

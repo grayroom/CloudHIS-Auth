@@ -1,76 +1,66 @@
 {
   "status": "done",
   "assets": {
-    "auth/static/css/index.23015820.css": {
-      "name": "auth/static/css/index.23015820.css",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/css/index.23015820.css",
-      "publicPath": "/auth/static/css/index.23015820.css"
+    "auth/static/js/index.js": {
+      "name": "auth/static/js/index.js",
+      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/index.js",
+      "publicPath": "/auth/static/js/index.js"
     },
-    "auth/static/js/index.732a5f09.js": {
-      "name": "auth/static/js/index.732a5f09.js",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/index.732a5f09.js",
-      "publicPath": "/auth/static/js/index.732a5f09.js"
+    "auth/static/js/src_components_MainPage_vue.js": {
+      "name": "auth/static/js/src_components_MainPage_vue.js",
+      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/src_components_MainPage_vue.js",
+      "publicPath": "/auth/static/js/src_components_MainPage_vue.js"
     },
-    "auth/static/js/869.e1767a19.js": {
-      "name": "auth/static/js/869.e1767a19.js",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/869.e1767a19.js",
-      "publicPath": "/auth/static/js/869.e1767a19.js"
+    "auth/static/js/src_components_LoginPage_vue.js": {
+      "name": "auth/static/js/src_components_LoginPage_vue.js",
+      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/src_components_LoginPage_vue.js",
+      "publicPath": "/auth/static/js/src_components_LoginPage_vue.js"
     },
-    "auth/static/js/394.d6547875.js": {
-      "name": "auth/static/js/394.d6547875.js",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/394.d6547875.js",
-      "publicPath": "/auth/static/js/394.d6547875.js"
+    "auth/static/js/src_components_SignupPage_vue.js": {
+      "name": "auth/static/js/src_components_SignupPage_vue.js",
+      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/src_components_SignupPage_vue.js",
+      "publicPath": "/auth/static/js/src_components_SignupPage_vue.js"
     },
-    "auth/static/js/493.dfa029cf.js": {
-      "name": "auth/static/js/493.dfa029cf.js",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/493.dfa029cf.js",
-      "publicPath": "/auth/static/js/493.dfa029cf.js"
-    },
-    "auth/static/js/980.fe8a404f.js": {
-      "name": "auth/static/js/980.fe8a404f.js",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/980.fe8a404f.js",
-      "publicPath": "/auth/static/js/980.fe8a404f.js"
+    "auth/static/js/src_components_InfoPage_vue.js": {
+      "name": "auth/static/js/src_components_InfoPage_vue.js",
+      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/src_components_InfoPage_vue.js",
+      "publicPath": "/auth/static/js/src_components_InfoPage_vue.js"
     },
     "favicon.ico": {
       "name": "favicon.ico",
       "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/favicon.ico",
       "publicPath": "/favicon.ico"
     },
-    "auth/static/js/index.732a5f09.js.map": {
-      "name": "auth/static/js/index.732a5f09.js.map",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/index.732a5f09.js.map",
-      "publicPath": "/auth/static/js/index.732a5f09.js.map"
-    },
-    "auth/static/js/869.e1767a19.js.map": {
-      "name": "auth/static/js/869.e1767a19.js.map",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/869.e1767a19.js.map",
-      "publicPath": "/auth/static/js/869.e1767a19.js.map"
-    },
-    "auth/static/js/394.d6547875.js.map": {
-      "name": "auth/static/js/394.d6547875.js.map",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/394.d6547875.js.map",
-      "publicPath": "/auth/static/js/394.d6547875.js.map"
-    },
-    "auth/static/js/493.dfa029cf.js.map": {
-      "name": "auth/static/js/493.dfa029cf.js.map",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/493.dfa029cf.js.map",
-      "publicPath": "/auth/static/js/493.dfa029cf.js.map"
-    },
-    "auth/static/js/980.fe8a404f.js.map": {
-      "name": "auth/static/js/980.fe8a404f.js.map",
-      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/auth/static/js/980.fe8a404f.js.map",
-      "publicPath": "/auth/static/js/980.fe8a404f.js.map"
-    },
     "index.html": {
       "name": "index.html",
       "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/index.html",
       "publicPath": "/index.html"
+    },
+    "index.3935e596527d3337.hot-update.js": {
+      "name": "index.3935e596527d3337.hot-update.js",
+      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/index.3935e596527d3337.hot-update.js",
+      "publicPath": "/index.3935e596527d3337.hot-update.js"
+    },
+    "index.3935e596527d3337.hot-update.json": {
+      "name": "index.3935e596527d3337.hot-update.json",
+      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/index.3935e596527d3337.hot-update.json",
+      "publicPath": "/index.3935e596527d3337.hot-update.json"
+    },
+    "index.3450818fed31ab06.hot-update.js": {
+      "name": "index.3450818fed31ab06.hot-update.js",
+      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/index.3450818fed31ab06.hot-update.js",
+      "publicPath": "/index.3450818fed31ab06.hot-update.js"
+    },
+    "index.3450818fed31ab06.hot-update.json": {
+      "name": "index.3450818fed31ab06.hot-update.json",
+      "path": "/Users/jeonghoon/Desktop/cloud-his/CloudHIS-Auth/dist/index.3450818fed31ab06.hot-update.json",
+      "publicPath": "/index.3450818fed31ab06.hot-update.json"
     }
   },
   "chunks": {
     "index": [
-      "auth/static/css/index.23015820.css",
-      "auth/static/js/index.732a5f09.js"
+      "auth/static/js/index.js",
+      "index.3450818fed31ab06.hot-update.js"
     ]
   },
   "publicPath": "/"
