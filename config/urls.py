@@ -23,6 +23,10 @@ urlpatterns = [
     path('auth/api/token/verify/', TokenVerifyView.as_view(),
          name='token_verify'),
 
+    # NOTE: emr에서 요구하는 환자/의사 정보
+    path('auth/api/patient/in-charge/', views.PatientInChargeView.as_view(),
+         name='patient_in_charge'),
+
     # NOTE: re_path를 통해 routing을 vue-router에게 인가
     re_path(r'^auth/', views.HomeView.as_view(), name='home'),
     path('', RedirectView.as_view(url='/auth/')),

@@ -172,9 +172,6 @@ class DoctorSignupSerializer(UserJWTSignupSerializer):
             address=self.validated_data['address'],
 
             subject=self.validated_data['subject'],
-            # room=self.validated_data['room'],
-            # dept_idx=self.validated_data['dept'],
-            # sup_idx=self.validated_data['sup'],
         )
 
         return user

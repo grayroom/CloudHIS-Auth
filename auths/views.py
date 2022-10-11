@@ -5,13 +5,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from auths.serializers import UserJWTSignupSerializer, \
     UserJWTLoginSerializer, CustomTokenObtainPairSerializer, \
-    DoctorSignupSerializer
+    DoctorSignupSerializer, PatientSignupSerializer
 
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework import status
 
-from auths.models import User
+from auths.models import User, Patient
 from config import settings
 
 from auths.permissions import IsAuthorizedUser
@@ -113,3 +113,20 @@ def get_payload(req):
     return jwt.decode(access_token,
                       settings.SIMPLE_JWT['VERIFYING_KEY'],
                       algorithms=[settings.SIMPLE_JWT['ALGORITHM']])
+
+
+class PatientInChargeView(APIView):
+    patientModel = Patient.objects
+    permission_classes([IsAuthorizedUser])
+
+    def post(self, request):
+        doc_idx = request.data['doctor_idx']
+        patient_list = self.patientModel.filter(doc_idx=doc_idx)
+        patient_serializer = PatientSignupSerializer(patient_list, many=True)
+        patient_serializer.is_valid(raise_exception=True)
+        # TODO: 여기서 empty exception뜨는데, patient user 추가후에 다시 검증
+
+        # TODO: patient_list -> serializer 구현할 것
+        return Response({
+            'patient_list': patient_serializer.validated_data
+        }, status=status.HTTP_200_OK)
