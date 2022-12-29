@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework import status
 
-from auths.models import User, Patient
+from auths.models import User, Patient, Doctor
 from config import settings
 
 from auths.permissions import IsAuthorizedUser
@@ -25,25 +25,46 @@ class HomeView(TemplateView):
 
 class JWTSignupView(APIView):
     doctor_serializer_class = DoctorSignupSerializer
+    patient_serializer_class = PatientSignupSerializer
 
     def post(self, request):
-        doctor_serializer = self.doctor_serializer_class(data=request.data)
+        if (request.data['user_type'] == 'patient'):
 
-        if doctor_serializer.is_valid(raise_exception=False):
-            user = doctor_serializer.save(request)
+            patient_serializer = self.patient_serializer_class(
+                data=request.data)
 
-            token = CustomTokenObtainPairSerializer.get_token(user)
-            refresh = str(token)
-            access = str(token.access_token)
+            if patient_serializer.is_valid(raise_exception=False):
+                user = patient_serializer.save(request)
 
-            return JsonResponse({
-                'user': user.username,
-                'access': access,
-                'refresh': refresh
-            })
+                token = CustomTokenObtainPairSerializer.get_token(user)
+                refresh = str(token)
+                access = str(token.access_token)
+
+                return JsonResponse({
+                    'user': user.username,
+                    'access': access,
+                    'refresh': refresh
+                })
+            else:
+                return Response(patient_serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(doctor_serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+            doctor_serializer = self.doctor_serializer_class(data=request.data)
+            if doctor_serializer.is_valid(raise_exception=False):
+                user = doctor_serializer.save(request)
+
+                token = CustomTokenObtainPairSerializer.get_token(user)
+                refresh = str(token)
+                access = str(token.access_token)
+
+                return JsonResponse({
+                    'user': user.username,
+                    'access': access,
+                    'refresh': refresh
+                })
+            else:
+                return Response(doctor_serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
 
 
 class JWTLoginView(APIView):
@@ -69,32 +90,58 @@ class JWTLoginView(APIView):
 
 
 class UserInformationView(APIView):
-    userModel = User.objects
+    patientModel = Patient.objects
+    doctorModel = Doctor.objects
     permission_classes([IsAuthorizedUser])
 
     def get(self, request):
         payload = get_payload(request)
-        user = self.userModel.get(username=payload['username'])
+        print(payload)
 
-        return JsonResponse({
-            'user': user.username,
-            'name': user.name,
-            'email': user.email,
-            'phone_num': user.phone_number.as_national,
-            'address': user.address.split("$")[0],
-            'address2': user.address.split("$")[1]
-        }, status=status.HTTP_200_OK)
+        if (payload['user_type'] == 'patient'):
+            user = self.patientModel.get(username=payload['username'])
+            return JsonResponse({
+                'user': user.username,
+                'name': user.name,
+                'email': user.email,
+                'phone_num': user.phone_number.as_national,
+                'address': user.address.split("$")[0],
+                'address2': user.address.split("$")[1],
+                'user_type': user.user_type
+            }, status=status.HTTP_200_OK)
+        else:
+            user = self.doctorModel.get(username=payload['username'])
+            return JsonResponse({
+                'user': user.username,
+                'name': user.name,
+                'email': user.email,
+                'phone_num': user.phone_number.as_national,
+                'address': user.address.split("$")[0],
+                'address2': user.address.split("$")[1],
+                'user_type': user.user_type,
+                'subject': user.subject,
+            }, status=status.HTTP_200_OK)
 
     def post(self, request):
         payload = get_payload(request)
-        user = self.userModel.get(username=payload['username'])
+        if (payload['user_type'] == 'patient'):
+            user = self.patientModel.get(username=payload['username'])
 
-        user.email = request.data['email']
-        user.phone_number = request.data['phone_num']
-        user.address = request.data['address']
-        user.save()
+            user.email = request.data['email']
+            user.phone_number = request.data['phone_num']
+            user.address = request.data['address']
+            user.save()
 
-        return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            user = self.doctorModel.get(username=payload['username'])
+
+            user.email = request.data['email']
+            user.phone_number = request.data['phone_num']
+            user.address = request.data['address']
+            user.save()
+
+            return Response(status=status.HTTP_200_OK)
 
 
 class UserLogoutView(APIView):

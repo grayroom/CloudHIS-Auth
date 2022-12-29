@@ -43,7 +43,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_patient(self, username, name, password, email, address,
-                       phone_number, doc_idx, is_admission, room):
+                       phone_number):
         user = self.create_user(
             username=username,
             name=name,
@@ -52,9 +52,6 @@ class UserManager(BaseUserManager):
             address=address,
             phone_number=phone_number
         )
-        user.doc_idx = doc_idx
-        user.is_admission = is_admission
-        user.room = room
         user.save(using=self._db)
         return user
 
@@ -66,7 +63,9 @@ class User(_User):
     join_date = models.DateTimeField(auto_now_add=True)
     phone_number = PhoneNumberField()
     # 소속을 나타내는 칼럼들
-    authority = models.IntegerField(default=0)  # 0: 외부, 1: 의사, 2: 관리자
+    user_type = models.CharField(
+        max_length=50, default='patient')  # patient, doctor, admin
+    authority = models.IntegerField(default=0)  # 0: 외부, 1: 승인됨
 
     objects = UserManager()
 
@@ -76,14 +75,15 @@ class User(_User):
         return self.username
 
     def create_user(self, username, password, name, email, address,
-                    phone_number):
+                    phone_number, user_type, authority=0):
         user = User(
             username=username,
             password=password,
             name=name,
             email=email,
             address=address,
-            phone_number=phone_number
+            phone_number=phone_number,
+            user_type=user_type
         )
         user.save()
         return user
@@ -101,7 +101,8 @@ class Doctor(User):
         return self.username
 
     def create_doctor(self, username, password, name, email, address,
-                      phone_number, subject, room, dept_idx, sup_idx):
+                      phone_number, subject, room, dept_idx, sup_idx,
+                      user_type, authority=0):
         user = Doctor(
             username=username,
             password=password,
@@ -112,7 +113,9 @@ class Doctor(User):
             subject=subject,
             room=room,
             dept_idx=dept_idx,
-            sup_idx=sup_idx
+            sup_idx=sup_idx,
+            user_type=user_type,
+            authority=authority
         )
         user.save()
         return user
@@ -121,15 +124,16 @@ class Doctor(User):
 class Patient(User):
     user_idx = models.OneToOneField(User, on_delete=models.CASCADE,
                                     parent_link=True, primary_key=True)
-    doc_idx = models.IntegerField(default=0)
-    is_admission = models.BooleanField(default=False)
-    room = models.CharField(max_length=50)
+    doc_idx = models.IntegerField(null=True, default=None)
+    is_admission = models.BooleanField(null=True, default=None)
+    room = models.CharField(max_length=50, null=True, default=None)
 
     def __str__(self):
         return self.username
 
     def create_patient(self, username, password, name, email, address,
-                       phone_number, doc_idx, is_admission, room):
+                       phone_number, doc_idx, is_admission, room,
+                       user_type, authority=0):
         user = Patient(
             username=username,
             password=password,
@@ -139,7 +143,9 @@ class Patient(User):
             phone_number=phone_number,
             doc_idx=doc_idx,
             is_admission=is_admission,
-            room=room
+            room=room,
+            user_type=user_type,
+            authority=authority
         )
         user.save()
         return user
