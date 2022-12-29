@@ -97,6 +97,10 @@ class UserJWTLoginSerializer(serializers.ModelSerializer):
 
 
 class PatientSignupSerializer(UserJWTSignupSerializer):
+    doc_idx = serializers.IntegerField(required=False)
+    is_admission = serializers.BooleanField(required=False)
+    room = serializers.CharField(required=False)
+
     class Meta:
         model = Patient
         fields = '__all__'
@@ -110,7 +114,9 @@ class PatientSignupSerializer(UserJWTSignupSerializer):
             email=validated_data['email'],
             phone_number=validated_data['phone_number'],
             address=validated_data['address'],
+            user_type=self.validated_data['user_type'],
 
+            # NOTE: 필수가 아닌 요소들
             doc_idx=validated_data['doc_idx'],
             is_admission=validated_data['is_admission'],
             room=validated_data['room'],
@@ -119,6 +125,7 @@ class PatientSignupSerializer(UserJWTSignupSerializer):
         return user
 
     def save(self, request):
+        print('save here')
         user = Patient.objects.create_patient(
             username=self.validated_data['username'],
             password=self.validated_data['password'],
@@ -126,10 +133,12 @@ class PatientSignupSerializer(UserJWTSignupSerializer):
             email=self.validated_data['email'],
             phone_number=self.validated_data['phone_number'],
             address=self.validated_data['address'],
+            user_type=self.validated_data['user_type'],
 
-            doc_idx=self.validated_data['doc_idx'],
-            is_admission=self.validated_data['is_admission'],
-            room=self.validated_data['room'],
+            # # NOTE: 필수가 아닌 요소들
+            # doc_idx=self.validated_data['doc_idx'],
+            # is_admission=self.validated_data['is_admission'],
+            # room=self.validated_data['room'],
         )
 
         return user
@@ -153,8 +162,9 @@ class DoctorSignupSerializer(UserJWTSignupSerializer):
             email=validated_data['email'],
             phone_number=validated_data['phone_number'],
             address=validated_data['address'],
-
             subject=validated_data['subject'],
+            user_type=self.validated_data['user_type'],
+
             room=validated_data['room'],
             dept_idx=validated_data['dept'],
             sup_idx=validated_data['sup'],
@@ -170,8 +180,8 @@ class DoctorSignupSerializer(UserJWTSignupSerializer):
             email=self.validated_data['email'],
             phone_number=self.validated_data['phone_number'],
             address=self.validated_data['address'],
-
             subject=self.validated_data['subject'],
+            user_type=self.validated_data['user_type'],
         )
 
         return user
@@ -191,6 +201,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Add custom claims
         token['username'] = user.username
+        token['user_type'] = user.user_type
+        token['name'] = user.name
+        token['email'] = user.email
         token['authority'] = user.authority
         # NOTE: cliam에 권한수준에 대한 정보가 들어가야 할 것  같음
 
