@@ -79,7 +79,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -123,7 +123,7 @@ DATABASES = {
         'NAME': env('PSQL_NAME'),
         'USER': env('PSQL_ID'),
         'PASSWORD': env('PSQL_PW'),
-        'HOST': 'localhost',
+        'HOST': env('PSQL_HOST'),
         'PORT': env('PSQL_PORT'),
     }
 }

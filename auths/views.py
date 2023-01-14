@@ -1,3 +1,4 @@
+from django.shortcuts import get_list_or_404
 from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
 from django.views.generic import TemplateView
@@ -96,7 +97,6 @@ class UserInformationView(APIView):
 
     def get(self, request):
         payload = get_payload(request)
-        print(payload)
 
         if (payload['user_type'] == 'patient'):
             user = self.patientModel.get(username=payload['username'])
@@ -162,18 +162,27 @@ def get_payload(req):
                       algorithms=[settings.SIMPLE_JWT['ALGORITHM']])
 
 
+class PatientInformationView(APIView):
+    permission_classes([IsAuthorizedUser])
+    patientModel = Patient.objects
+
+    def post(self, request):
+        user = self.patientModel.get(user_idx=request.data['user_idx'])
+        user_serializer = PatientSignupSerializer(user)
+
+        return JsonResponse(user_serializer.data, status=status.HTTP_200_OK)
+
+
 class PatientInChargeView(APIView):
     patientModel = Patient.objects
     permission_classes([IsAuthorizedUser])
 
     def post(self, request):
-        doc_idx = request.data['doctor_idx']
-        patient_list = self.patientModel.filter(doc_idx=doc_idx)
-        patient_serializer = PatientSignupSerializer(patient_list, many=True)
-        patient_serializer.is_valid(raise_exception=True)
+        patient_list = get_list_or_404(
+            self.patientModel, doc_idx=request.data['doctor_idx'])
+        patient_serializer = PatientSignupSerializer(
+            patient_list, many=True)
         # TODO: 여기서 empty exception뜨는데, patient user 추가후에 다시 검증
 
         # TODO: patient_list -> serializer 구현할 것
-        return Response({
-            'patient_list': patient_serializer.validated_data
-        }, status=status.HTTP_200_OK)
+        return Response(patient_serializer.data, status=status.HTTP_200_OK)
