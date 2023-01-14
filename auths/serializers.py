@@ -16,6 +16,8 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             password=validated_data['password'],
             name=validated_data['name'],
+            dob=validated_data['dob'],
+            sex=validated_data['sex'],
             email=validated_data['email'],
             phone_number=validated_data['phone_number'],
         )
@@ -27,6 +29,8 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
             username=self.validated_data['username'],
             password=self.validated_data['password'],
             name=self.validated_data['name'],
+            dob=self.validated_data['dob'],
+            sex=self.validated_data['sex'],
             email=self.validated_data['email'],
             phone_number=self.validated_data['phone_number'],
             address=self.validated_data['address'],
@@ -38,6 +42,8 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
         username = data.get('username', None)
         password = data.get('password', None)
         name = data.get('name', None)
+        dob = data.get('dob', None)
+        sex = data.get('sex', None)
         email = data.get('email', None)
         phone_number = data.get('phone_number', None)
 
@@ -58,6 +64,12 @@ class UserJWTSignupSerializer(serializers.ModelSerializer):
 
         if phone_number is None:
             raise serializers.ValidationError('전화번호를 입력해주세요')
+
+        if dob is None:
+            raise serializers.ValidationError('생년월일을 입력해주세요')
+
+        if sex is None:
+            raise serializers.ValidationError('성별을 입력해주세요')
 
         return data
 
@@ -111,6 +123,8 @@ class PatientSignupSerializer(UserJWTSignupSerializer):
             username=validated_data['username'],
             password=validated_data['password'],
             name=validated_data['name'],
+            dob=validated_data['dob'],
+            sex=validated_data['sex'],
             email=validated_data['email'],
             phone_number=validated_data['phone_number'],
             address=validated_data['address'],
@@ -125,11 +139,12 @@ class PatientSignupSerializer(UserJWTSignupSerializer):
         return user
 
     def save(self, request):
-        print('save here')
         user = Patient.objects.create_patient(
             username=self.validated_data['username'],
             password=self.validated_data['password'],
             name=self.validated_data['name'],
+            dob=self.validated_data['dob'],
+            sex=self.validated_data['sex'],
             email=self.validated_data['email'],
             phone_number=self.validated_data['phone_number'],
             address=self.validated_data['address'],
@@ -145,6 +160,8 @@ class PatientSignupSerializer(UserJWTSignupSerializer):
 
 
 class DoctorSignupSerializer(UserJWTSignupSerializer):
+    subject = serializers.CharField(required=True)
+    position = serializers.CharField(required=True)
     room = serializers.CharField(required=False)
     dept_idx = serializers.CharField(required=False)
     sup_idx = serializers.CharField(required=False)
@@ -159,10 +176,13 @@ class DoctorSignupSerializer(UserJWTSignupSerializer):
             username=validated_data['username'],
             password=validated_data['password'],
             name=validated_data['name'],
+            dob=validated_data['dob'],
+            sex=validated_data['sex'],
             email=validated_data['email'],
             phone_number=validated_data['phone_number'],
             address=validated_data['address'],
             subject=validated_data['subject'],
+            position=validated_data['position'],
             user_type=self.validated_data['user_type'],
 
             room=validated_data['room'],
@@ -177,10 +197,13 @@ class DoctorSignupSerializer(UserJWTSignupSerializer):
             username=self.validated_data['username'],
             password=self.validated_data['password'],
             name=self.validated_data['name'],
+            dob=self.validated_data['dob'],
+            sex=self.validated_data['sex'],
             email=self.validated_data['email'],
-            phone_number=self.validated_data['phone_number'],
             address=self.validated_data['address'],
+            phone_number=self.validated_data['phone_number'],
             subject=self.validated_data['subject'],
+            position=self.validated_data['position'],
             user_type=self.validated_data['user_type'],
         )
 

@@ -12,6 +12,8 @@ urlpatterns = [
          name='signup'),
     path('auth/api/user/info/', views.UserInformationView.as_view(),
          name='userinfo'),
+    path('auth/api/patient/info/', views.PatientInformationView.as_view(),
+         name='patientinfo'),
     path('auth/api/user/logout/', views.UserLogoutView.as_view(),
          name='logout'),
 
